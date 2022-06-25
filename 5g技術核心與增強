@@ -1,0 +1,28 @@
+=========================
+ch1. 概述
+=========================
+1. NR相比LTE的增強
+	(1) 更高的頻譜範圍
+	(2) 更大的系統帶寬
+	(3) 更靈活的frame structure
+	(4) 彈性的subcarrier spacing (SCS)
+	(5) low latency of air interface
+	(6) reference signal
+	(7) MIMO
+	(8) UE power saving
+	(9) mobility
+	(10) protocol layer
+	(11) QOS
+	(12) core network
+	
+2. R16的增強
+	(1) MIMO
+	(2) URLLC - physical layer
+	(3) URLLC - upper layer
+	(4) UE power saving
+	(5) 2-step RACH
+	(6) 上行頻譜切換發送
+	(7) mobility
+	(8) MR-DC
+	(9) V2X
+	(10) 

@@ -1,0 +1,145 @@
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+char 2 基礎命令和目錄結構
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+touch: 建立空白檔案或改變建立日期（不覆寫）
+less/more: 大檔案避免滾動,採用分螢幕顯示
+	- [空白]： 下一螢幕
+	- B: 上一螢幕
+	- Q: 結束
+file: 顯示檔案的格式資訊
+locate: 跟find類似, 但會因為是在系統建立的檔案索引中尋找檔案,會較find快速,但可能會因為新檔案尚未加入索引而搜尋不到
+head/tail: 顯示檔案的前/後幾行
+sort： 排序檔案內的"行"
+shell變數： shell保存腳步執行過程中的資料(shell variable), 關掉shell就消失了
+man:
+	1	使用者命令
+	2	系統呼叫
+	3	Unix高級程式設計函式庫文件
+	4	設備界面和設備驅動程式資訊
+	5	檔案描述符（系統設定檔案）
+	6	遊戲
+	7	檔案格式、規範和編碼
+	8	系統命令和server
+kill -STOP [pid]
+kill -CONT [pid]
+ln -s [target] [linkname]
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+char 3 設備管理
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+設備檔案分類：
+	1.區塊設備(block device): 按固定的區塊大小讀取資料, ex:硬碟
+	2.字串設備(character device): 沒有固定容量,只能讀寫字元資料, ex:印表機
+	3.管道設備(pipe device): 與character device類似,但非由核心驅動
+	4.socket設備
+設備檔案路徑：
+	/dev： 提供 user process 使用設備
+	/sys/devices(sysfs界面)： 查看設備資訊及管理設備
+指令：
+	udevadm info --query=all --name=[devname]
+	dd: 複製固定大小的資料區塊,做檔案之間的io
+設備名稱：
+	1.硬碟： /dev/sd*
+	  - sd = SCSI disk, SCSI協定目前主要是用在USB設備
+	  - 可以利用lsscsi查看SCSI設備的資訊
+
+	2.CD/DVD: /dev/sr*
+	  - 可讀寫光碟：/dev/sg*
+	3. terminal device: /dev/tty 和 /dev/pts
+	  - 程序正在使用的終端設備: /dev/tty
+	  - 可用chvt切換工作台
+	4. Serial port: /dev/ttyS*
+	5. 聲音設備： /dev/snd*, /dev/dsp, /dev/audio ...
+	  - Linux有Advanced Linux Sound Architecture (ALSA) 和 Open Sound System (OSS) 兩組聲音設備
+ 設備檔案管理系統：
+ 	- mknod -> devfs -> udev + devtmpfs
+ 	- udevadm 是 udevd 的管理工具
+[這裡跳過一大段]
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+char 4 硬碟和檔案系統
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+磁碟分區-檔案系統
+分區表
+	1.Master Boot Record (MBR)
+	  - 主分區/擴充分區/邏輯分區
+	2.Globally Unique Identifier Partition Table (GPT)
+分區工具
+	1.parted
+	2.gparted
+	3.fdisk
+	4.gdisk
+blockdev
+FUSE (File System in User Space)
+	1. Plan 9 9P
+VFS (Virtual File System)
+檔案系統
+	1. ext4
+	2. iso9660
+	3. FAT
+	4. HFS+
+mkfs & fsck & e2fsck
+mount
+	1. 設備名 on 掛載點 type 掛載類型 （掛載選項）
+UUID
+	1.blkid
+/etc/fstab or /etc/fstab.d or systemd
+df & du
+特殊用途的檔案系統
+	1. proc
+	2. sysfs
+	3. tmpfs
+swap
+	1. 用來保存記憶體頁面的磁碟空間
+	2. free
+	3. mkswap
+	4. swapon/swapoff
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+char 5 Linux核心的啟動
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+啟動流程
+	1. BIOS或啟動韌體載入並執行引導裝載程式
+	2. 引導裝載程式在磁碟上找到核心映像, 將期載入記憶體並啟動
+	3. 核心初始化設備及其驅動程式
+	4. 核心掛載root檔案系統
+	5. 核心用PID1執行init, user space 啟動
+	6. init 啟動 system process
+	7. init 啟動使用者登入程式
+啟動訊息
+	dmesg
+核心初始化
+	- 第3～5步
+	1. 檢查CPU
+	2. 檢查memory
+	3. 檢查設備匯流排
+	4. 檢查設備
+	5. 設定附加核心子系統(ex network)
+	6. 掛載root目錄
+	7. 啟動 user space
+核心參數
+	/proc/cmdline
+引導裝載程式
+	- 核心在哪裡？ root file system
+	- 核心啟動參數？
+	- 用BIOS或UEFI存取磁碟
+	- 例子
+		1. GRUB (Grand Unified BootLoader)
+		2. LILO
+		3. SYSLINUX
+		4. LOADIN
+		5. efilinux
+		6. coreboot
+		7. Linux Kernel EFISTUB
+	* insmod
+
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+char 6 使用者空間的啟動
+＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
+啟動順序
+	1. init
+	2. udevd, syslogd, ...
+	3. network setting
+	4. cron, 列印, ...
+	5. 登入提示字元, GUI, application, ...
+
